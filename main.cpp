@@ -6,7 +6,7 @@ using namespace std;
 void daj_punkty(double x0, double y0, double promien, double teta){
 
     double x1,y1,x2,y2,x3,y3,x4,y4,rp2,kat;
-    kat=teta * M_PI / 180.0;
+    kat=teta * M_PI / 180.0; // kat obrotu jest w lewo, przeciwnie do ruchu wskazowek zegara
     rp2=promien*sqrt(2)/2; // promien^(1/2) / 2
 
     x1=  rp2 * cos(kat) - rp2 * sin(kat) + x0; // prawy gorny
