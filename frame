@@ -1,0 +1,109 @@
+void robot::frame( double x, double y, double alfa , double lin_vel, double rot_vel){
+    char atom_window[] = "Symulacja robota";
+    int thickness = 2,lineType = 8,r=30;
+    double kat ,rp2, cosx, sinx, szer;
+    Mat img = Mat::zeros( w, w, CV_8UC3 );
+    kat =alfa ; // kat obrotu jest w lewo, przeciwnie do ruchu wskazowek zegara
+    cosx= cos(kat);
+    sinx=sin(kat);
+    rp2 =r/sqrt(2); // promien^(1/2) / 2
+
+    Point pg, lg, pd, ld,s,s_dzialo,pg_bl,pd_bl,lg_bl,ld_bl,pg_bp,pd_bp,lg_bp,ld_bp;
+    Point pkt[1][4];
+    Point pkt1[1][4];
+    Point pkt2[1][4];
+
+    s= Point(x,y); // srodek
+    s_dzialo= Point(x - 1.3*r*sinx,y + 1.3*r*cosx); // długość chwytaka to liczba 1.3, można dowolnie zmieniać, byleby takie same w x i y
+
+    // boczne prostokaty
+    szer=0.6; // szerokosc bocznych prostokatow, im blizej 1 tym cienszy
+
+    pg_bl = Point(x - szer*rp2*cosx - szer*rp2*sinx, y - szer*rp2*sinx + szer*rp2*cosx);
+    pd_bl = Point(x - szer*rp2*cosx + szer*rp2*sinx, y - szer*rp2*sinx - szer*rp2*cosx);
+    lg_bl = Point(x - rp2*cosx - szer*rp2*sinx, y - rp2*sinx + szer*rp2*cosx);
+    ld_bl = Point(x - rp2*cosx + szer*rp2*sinx, y - rp2*sinx - szer*rp2*cosx);
+
+    pg_bp = Point(x + szer*rp2*cosx - szer*rp2*sinx, y + szer*rp2*sinx + szer*rp2*cosx);
+    pd_bp = Point(x + szer*rp2*cosx + szer*rp2*sinx, y + szer*rp2*sinx - szer*rp2*cosx);
+    lg_bp = Point(x + rp2*cosx - szer*rp2*sinx, y + rp2*sinx + szer*rp2*cosx);
+    ld_bp = Point(x + rp2*cosx + szer*rp2*sinx, y + rp2*sinx - szer*rp2*cosx);
+
+
+    pd = Point( rp2 * cosx - rp2 * sinx + x, rp2 * sinx + rp2 * cosx + y);
+    ld = Point(-rp2 * cosx - rp2 * sinx + x,-rp2 * sinx + rp2 * cosx + y);
+    pg = Point(rp2 * cosx + rp2 * sinx + x,rp2 * sinx - rp2 * cosx + y);
+    lg = Point(-rp2 * cosx + rp2 * sinx + x,-rp2 * sinx - rp2 * cosx + y);
+//    line(img, pg, lg , Scalar( 220, 44, 0 ),thickness,lineType );
+//    line(img, pg, pd , Scalar( 220, 44, 255 ),thickness,lineType );
+//    line(img, lg, ld , Scalar( 220, 44, 0 ),thickness,lineType );
+//    line(img, pd, ld , Scalar( 220, 44, 0 ),thickness,lineType );
+    line(img, s, s_dzialo , Scalar( 220, 44, 200 ),thickness,lineType ); // chwytak
+
+    // glowny kwadrat
+    pkt[0][0] =pd;
+    pkt[0][1] =ld;
+    pkt[0][2] =lg;
+    pkt[0][3] =pg;
+    const Point* ppt[1] = { pkt[0] };
+    int npt[] = { 4 };
+    fillPoly( img,
+              ppt,
+              npt,
+              1,
+              Scalar( 220, 44, 0 ),
+              lineType );
+
+    // bok1
+    pkt1[0][0] =pd_bl;
+    pkt1[0][1] =ld_bl;
+    pkt1[0][2] =lg_bl;
+    pkt1[0][3] =pg_bl;
+    const Point* ppt1[1] = {pkt1[0]}; // NIE WIEM CZY TU TEZ TRZEBA int ntp [] NOWE ALE DZIALA BEZ
+    fillPoly( img,
+              ppt1,
+              npt,
+              1,
+              Scalar( 220, 44, 200 ),
+              lineType );
+
+    // bok2
+    pkt2[0][0] =pd_bp;
+    pkt2[0][1] =ld_bp;
+    pkt2[0][2] =lg_bp;
+    pkt2[0][3] =pg_bp;
+    const Point* ppt2[1] = {pkt2[0]};
+    fillPoly( img,
+              ppt2,
+              npt,
+              1,
+              Scalar( 220, 44, 200 ),
+              lineType );
+
+
+//    line(img, pg_bl, pd_bl , Scalar( 220, 44, 200 ),thickness,lineType );
+//    line(img, lg_bl, ld_bl , Scalar( 220, 44, 200 ),thickness,lineType );
+//
+//    line(img, pg_bp, pd_bp , Scalar( 220, 44, 200 ),thickness,lineType );
+//    line(img, lg_bp, ld_bp , Scalar( 220, 44, 200 ),thickness,lineType );
+
+    putText(img, //target image
+            "V lin "+to_string(lin_vel), //text
+            cv::Point(img.rows / 2, 850), //top-left position
+            cv::FONT_HERSHEY_DUPLEX,
+            1.0,
+            CV_RGB(118, 185, 0), //font color
+            1);
+    putText(img, //target image
+            "V ang "+to_string(rot_vel), //text
+            cv::Point(img.rows / 2, 900), //top-left position
+            cv::FONT_HERSHEY_DUPLEX,
+            1.0,
+            CV_RGB(118, 185, 0), //font color
+            1);
+
+
+//    line(img, s,s1, Scalar( 220, 44, 0 ),thickness,lineType );
+    imshow( atom_window, img );
+    waitKey(1000/30);
+}
